@@ -1,9 +1,25 @@
 #!/bin/bash
-# This command changes the PermitRootLogin option from the default of "without-password" to "Yes" to allow OTP authentication of the root user
-sed -i 's/^\(PermitRootLogin \).*/\1Yes/' /etc/ssh/sshd_config
-# These commands add the required options to allow for verifying using public key AND the OTP password method.
-sed -i '$a ChallengeResponseAuthentication yes'  /etc/ssh/sshd_config
-sed -i '$a AuthenticationMethods publickey,keyboard-interactive'  /etc/ssh/sshd_config
-# This command adds the Google PAM Library to the PAM config list and allows for OTPs using the Google Library
-sed -i '$a sshd-kbdint   auth required           /usr/local/lib/security/pam_google_authenticator.so' /etc/pam.conf
+if grep -wq "ChallengeResponseAuthentication yes" /etc/ssh/sshd_config; then
+    echo "Line exists no changes made"
+else
+    sed -i '$a ChallengeResponseAuthentication yes'  /etc/ssh/sshd_config
+fi
+
+if grep -wq "AuthenticationMethods publickey,keyboard-interactive" /etc/ssh/sshd_config; then
+    echo "Line exists no changes made"
+else
+    sed -i '$a AuthenticationMethods publickey,keyboard-interactive'  /etc/ssh/sshd_config
+fi
+
+if grep -wq "sshd-kbdint   auth required           /usr/local/lib/security/pam_google_authenticator.so" /etc/pam.conf; then
+    echo "Line exists no changes made"
+else
+    sed -i '$a sshd-kbdint   auth required           /usr/local/lib/security/pam_google_authenticator.so' /etc/pam.conf
+fi
+
+if grep -wq "PermitRootLogin Yes" /etc/ssh/sshd_config; then
+    echo "Line exists no changes made"
+else
+    sed -i 's/^\(PermitRootLogin \).*/\1Yes/' /etc/ssh/sshd_config
+fi
 
